@@ -6,6 +6,7 @@ import cloudinary.api
 from pathlib import Path
 import platform
 from dotenv import load_dotenv
+from whitenoise.storage import CompressedManifestStaticFilesStorage
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -15,22 +16,21 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default-key-change-this')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-# 🛰️ Host & Security Settings
+
 if not DEBUG:
-   
     RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
     
-    ALLOWED_HOSTS = ['://onrender.com']
+    
+    ALLOWED_HOSTS = ['findhome-89kb.onrender.com']
     if RENDER_EXTERNAL_HOSTNAME:
         ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
     
- 
+    
     CSRF_TRUSTED_ORIGINS = [
-        "https://://onrender.com",
+        "https://onrender.com",
         "https://*.onrender.com"
     ]
     
-  
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
@@ -99,7 +99,6 @@ DATABASES = {
     )
 }
 
-
 if not DATABASES['default'].get('ENGINE'):
     DATABASES['default'] = {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -131,18 +130,22 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+
+class WhiteNoiseStaticFilesStorage(CompressedManifestStaticFilesStorage):
+    manifest_strict = False
+
+STATICFILES_STORAGE = 'core.settings.WhiteNoiseStaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
 
-#  Tailwind Styling
+
 TAILWIND_APP_NAME = 'theme'
 if platform.system() == 'Windows':
     NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
 else:
     NPM_BIN_PATH = "/usr/bin/npm"
-
 
 LOGOUT_REDIRECT_URL = 'index'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
