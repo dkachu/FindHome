@@ -15,13 +15,12 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 if not DEBUG:
     RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
-    
-    ALLOWED_HOSTS = ['findhome-89kb.onrender.com']
+    ALLOWED_HOSTS = ['://onrender.com']
     if RENDER_EXTERNAL_HOSTNAME:
         ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
     
     CSRF_TRUSTED_ORIGINS = [
-        "https://onrender.com",
+        "https://://onrender.com",
         "https://*.onrender.com"
     ]
     
@@ -82,22 +81,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=os.getenv('DATABASE_URL'),
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
-}
-
-if not DATABASES['default'].get('ENGINE'):
-    DATABASES['default'] = {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if not DEBUG:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.getenv('DATABASE_URL'),
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
 
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = os.getenv('TIME_ZONE', 'UTC')
+TIME_ZONE = os.getenv('TIME_ZONE', 'Africa/Nairobi')
 USE_I18N = True
 USE_TZ = True
 
@@ -120,7 +121,6 @@ STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
     os.path.join(BASE_DIR, 'theme/static'),
 ]
 
@@ -130,6 +130,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
 
 TAILWIND_APP_NAME = 'theme'
+
 if platform.system() == 'Windows':
     NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
 else:
