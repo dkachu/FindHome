@@ -7,23 +7,30 @@ from pathlib import Path
 import platform
 from dotenv import load_dotenv
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(os.path.join(BASE_DIR, '.env'))
 
-SECRET_KEY = os.getenv('SECRET_KEY')
-DEBUG = os.getenv('DEBUG') == 'True'
 
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default-key-change-this')
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
+# 🛰️ Host & Security Settings
 if not DEBUG:
-    # Update to your Render domain
-    ALLOWED_HOSTS = [os.getenv('PRODUCTION_DOMAIN', '://onrender.com')]
-    
    
+    RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+    
+    ALLOWED_HOSTS = ['://onrender.com']
+    if RENDER_EXTERNAL_HOSTNAME:
+        ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+    
+ 
     CSRF_TRUSTED_ORIGINS = [
-        f"https://{os.getenv('PRODUCTION_DOMAIN', '://onrender.com')}",
+        "https://://onrender.com",
         "https://*.onrender.com"
     ]
     
+  
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
@@ -34,6 +41,7 @@ else:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
     CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://127.0.0.1:8000']
     SECURE_SSL_REDIRECT = False  
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -48,6 +56,7 @@ INSTALLED_APPS = [
     'theme',
     'kiota',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -81,7 +90,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-# Database Configuration (Postgres for Production)
+
 DATABASES = {
     'default': dj_database_url.config(
         default=os.getenv('DATABASE_URL'),
@@ -89,19 +98,21 @@ DATABASES = {
         conn_health_checks=True,
     )
 }
-# Fallback for local development 
-if not DATABASES['default']:
+
+
+if not DATABASES['default'].get('ENGINE'):
     DATABASES['default'] = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
+
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = os.getenv('TIME_ZONE', 'UTC')
 USE_I18N = True
 USE_TZ = True
 
-# Cloudinary Storage
+
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
     'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
@@ -117,7 +128,7 @@ cloudinary.config(
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-#  Static Files (WhiteNoise)
+
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
@@ -125,12 +136,13 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
 
-# Tailwind
+#  Tailwind Styling
 TAILWIND_APP_NAME = 'theme'
 if platform.system() == 'Windows':
     NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
 else:
     NPM_BIN_PATH = "/usr/bin/npm"
+
 
 LOGOUT_REDIRECT_URL = 'index'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
