@@ -6,7 +6,6 @@ import cloudinary.api
 from pathlib import Path
 import platform
 from dotenv import load_dotenv
-from whitenoise.storage import CompressedManifestStaticFilesStorage
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,14 +19,13 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 if not DEBUG:
     RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
     
-    
     ALLOWED_HOSTS = ['findhome-89kb.onrender.com']
     if RENDER_EXTERNAL_HOSTNAME:
         ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
     
-    
+ 
     CSRF_TRUSTED_ORIGINS = [
-        "https://onrender.com",
+        "https://findhome-89kb.onrender.com",
         "https://*.onrender.com"
     ]
     
@@ -132,10 +130,7 @@ STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
-class WhiteNoiseStaticFilesStorage(CompressedManifestStaticFilesStorage):
-    manifest_strict = False
-
-STATICFILES_STORAGE = 'core.settings.WhiteNoiseStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
