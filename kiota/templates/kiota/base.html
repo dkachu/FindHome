@@ -1,0 +1,166 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ company.name|default:"Kiota Homes" }} {% endblock %}</title>
+    {% tailwind_css %}
+    
+    <!--  Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #ffffff; 
+            color: #222222;
+            overflow-x: hidden;
+        }
+        
+        p {
+            color: #717171 !important; 
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+
+        .btn-primary {
+            background-color: #FF385C !important;
+            border: none !important;
+            color: white !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #E31C5F !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .nav-link:hover, nav a:hover {
+            color: #FF385C !important;
+        }
+
+        .property-card {
+            background-color: #ffffff;
+            border: 1px solid #ebebeb;
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .property-card:hover {
+            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+        }
+
+        .logo-container {
+            width: 80px; 
+            height: 80px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .border-custom { border-color: #ebebeb; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #ffffff; }
+        ::-webkit-scrollbar-thumb {
+            background: #dddddd;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+   
+    <nav class="navbar sticky top-0 px-6 lg:px-16 border-b border-gray-100 shadow-md" 
+         style="background-color: white !important; z-index: 999999 !important;">
+        
+        <!-- Navbar  -->
+        <div class="navbar-start w-full flex items-center" style="background-color: white !important;">
+            
+            <!-- Logo  -->
+            <a href="{% url 'index' %}" class="flex items-center pr-6 mr-6 border-r border-gray-200 transition-transform hover:scale-105" style="background-color: white !important;">
+                <div class="logo-container" style="background-color: white !important;">
+                    {% if company.logo %}
+                        <img src="{{ company.logo.url }}" alt="{{ company.name }}" class="max-h-full max-w-full object-contain" />
+                    {% else %}
+                        <img src="{% static 'kiota/img/logo.jpeg' %}" alt="Default Logo" class="max-h-full max-w-full object-contain" />
+                    {% endif %}
+                </div>
+                <span class="text-3xl font-black text-[#FF385C] tracking-tighter hidden xl:block italic uppercase ml-4">
+                    {{ company.name|default:"KIOTA" }}
+                </span>
+            </a>
+            
+            <!-- Desktop Links -->
+            <div class="hidden lg:flex" style="background-color: white !important;">
+                <ul class="flex flex-row gap-6 font-bold text-lg">
+                    <li><a href="{% url 'index' %}" class="nav-link px-4 py-2 hover:bg-gray-50 rounded-xl transition-all">Home</a></li>
+                    <li><a href="{% url 'about' %}" class="nav-link px-4 py-2 hover:bg-gray-50 rounded-xl transition-all">About Us</a></li>
+                    <li><a href="{% url 'contact' %}" class="nav-link px-4 py-2 hover:bg-gray-50 rounded-xl transition-all">Contact</a></li>
+                </ul>
+            </div>
+
+            <!--Dashboard -->
+            <div class="hidden lg:flex ml-auto gap-3" style="background-color: white !important;">
+                {% if user.is_superuser %}
+                    <a href="{% url 'owner_dashboard' %}" class="btn btn-primary btn-md rounded-xl px-8 font-black">DASHBOARD</a>
+                    <a href="{% url 'logout' %}" class="btn btn-ghost btn-md rounded-xl font-bold">Logout</a>
+                {% else %}
+                    <a href="{% url 'admin:login' %}" class="btn btn-primary btn-md rounded-xl px-8 font-black">Admin Login</a>
+                {% endif %}
+            </div>
+
+            <!-- Mobile Menu -->
+            <div class="dropdown dropdown-end lg:hidden ml-auto" style="background-color: white !important;">
+                <div tabindex="0" role="button" class="btn btn-ghost btn-circle text-black">
+                    <svg xmlns="http://w3.org" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </div>
+                <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 p-2 shadow-2xl bg-white text-black rounded-2xl w-64 font-bold border border-custom" style="z-index: 1000000 !important;">
+                    <li><a href="{% url 'index' %}" class="nav-link py-2">Home</a></li>
+                    <li><a href="{% url 'about' %}" class="nav-link py-2">About Us</a></li>
+                    <li><a href="{% url 'contact' %}" class="nav-link py-2">Contact</a></li>
+                    <li class="border-t border-custom mt-2 pt-2">
+                        {% if user.is_superuser %}
+                            <a href="{% url 'owner_dashboard' %}" class="text-[#FF385C] font-black">Dashboard</a>
+                            <a href="{% url 'logout' %}" class="text-error font-bold">Logout</a>
+                        {% else %}
+                            <a href="{% url 'admin:login' %}" class="text-[#FF385C] font-black">Admin Login</a>
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+   
+    <main class="flex-grow animate-in fade-in duration-500 relative z-0 isolate">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <footer class="footer footer-center p-12 bg-gray-50 border-t border-custom mt-20 text-gray-800">
+        <aside>
+            <p class="font-bold text-[#FF385C] text-xl tracking-tighter uppercase italic">{{ company.name|default:"KIOTA" }}</p> 
+            {% if company.twitter_url %}
+            <div class="my-2">
+                <a href="{{ company.twitter_url }}" target="_blank" class="hover:text-[#1DA1F2] transition-colors">
+                    <svg xmlns="http://w3.org" width="20" height="20" fill="currentColor" class="inline" viewBox="0 0 16 16">
+                        <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.6.75zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633z""")/>>
+                    </svg>
+                </a>
+            </div>
+            {% endif %}
+            <p class="text-xs text-gray-500 font-bold uppercase tracking-widest">&copy; 2026 {{ company.name|default:"Kiota" }} Real Estate • Nairobi, Kenya</p>
+        </aside>
+    </footer>
+
+</body>
+</html>

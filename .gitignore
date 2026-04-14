@@ -1,0 +1,27 @@
+# --- Environment Variables ---
+.env
+.venv
+
+
+# --- Python / Django ---
+*.pyc
+__pycache__/
+db.sqlite3
+media/
+staticfiles/
+
+# --- Tailwind / Node.js ---
+node_modules/
+.npm
+.eslintcache
+# If using django-tailwind, ignore the internal node build artifacts
+theme/static_src/node_modules/
+
+# --- Operating System ---
+.DS_Store
+Thumbs.db
+
+# --- IDEs ---
+.vscode/
+.idea/
+*.swp
